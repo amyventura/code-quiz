@@ -23,20 +23,19 @@ function startQuiz() {
   document.getElementById("start-screen").style.display = "none";
   // un-hide questions section
   document.getElementById("questions").style.display = "block";
-  // start timer
-  var timeInterval = setInterval(function() {
-  // show starting time
-    timerEl.textContent = time;
-    time--;
-  }, 1000);
-  
   getQuestion();
+  // show time
+  timerEl.textContent = time;  
+  // start timer
+  timerId = setInterval(clockTick, 1000)
 }
 
 function getQuestion() {
   // get current question object from array
   questions[currentQuestionIndex];
   // update title with current question
+  console.log(questions)
+  console.log(currentQuestionIndex)
   questionTitle.innerText = questions[currentQuestionIndex].title;
   // clear out any old question choices
   choicesEl.innerHTML = "";
@@ -60,7 +59,7 @@ function answerClick(event) {
   if (event.target.textContent === questions[currentQuestionIndex].answer) {
     // play "right" sound effect
     // added to score
-    score = score + 10;
+    score = score + 20;
   } 
 
   // if user guessed wrong
@@ -72,7 +71,7 @@ function answerClick(event) {
   // move to next question
   currentQuestionIndex++;
   // check if we've run out of questions
-  if (currentQuestionIndex > currentQuestionIndex){
+  if (currentQuestionIndex === questions.length - 1){
   // if we have run out of questions call quizEnd function
     quizEnd()
   }
@@ -86,11 +85,11 @@ function answerClick(event) {
 
 function quizEnd() {
   // stop timer
-  clearInterval(timeInterval);
+  clearInterval(timerId);
 //   // show end screen
   document.getElementById("end-screen").style.display = "block";
 //   // show final score
-
+  document.getElementById("final-score").innerText = score;
 // console.log(quizEnd)
 //   // hide questions section
   document.getElementById("questions").style.display = "none";
@@ -98,29 +97,53 @@ function quizEnd() {
 
 function clockTick() {
   // update time
-
+  time--;
+  timerEl.textContent = time;  
   // check if user ran out of time
-  if (timeEl === 0) {
-    alert("You have run out of time! Better luck next time.")
+  if (time === 0) {
+    quizEnd();
   }
 }
 
 function saveHighscore() {
   // get value of input box
-
+  var inputBox = document.getElementById("initials").value;
   // make sure value wasn't empty
-    // get saved scores from localstorage, or if not any, set to empty array
-
+  if (inputBox === "") {
+    displayMessage("You must add your initials to save your score");
+  }
+    // get saved scores from localstorage, or if not any, set to empty array 
+  var savedScore = localStorage.getItem("savedScore");
+  // if (savedS)
+  savedScore = [];
+  
     // format new score object for current user
-
+    var newScore = {
+      // initialsEl: inputBox.trim(),
+      score: score.value,
+    };
     // save to localstorage
+  // localStorage.setItem("inputBox", inputBox);
+  // localStorage.setItem("savedScore", savedScore)
+  // score.push();
+    localStorage.setItem("newScore", newScore)
+    
+
+  // Get data
+    localStorage.getItem("inputBox");
+    localStorage.getItem("newScore");
 
     // redirect to next page
+  window.location.href = "highscores.html";
 }
+
 
 function checkForEnter(event) {
   // check if event key is enter
-    // saveHighscore
+  if (event.key === "Enter") {
+      // saveHighscore
+      saveHighscore();
+    };
 }
 
 // user clicks button to submit initials
@@ -140,38 +163,3 @@ initialsEl.onkeyup = checkForEnter;
 
 
 
-// list of all questions, choices, and answers
-var questions = [
-  {
-    title: "Commonly used data types DO NOT include:",
-    choices: ["strings", "booleans", "alerts", "numbers"],
-    answer: "alerts"
-  },
-  {
-    title: "The condition in an if / else statement is enclosed within ____.",
-    choices: ["quotes", "curly brackets", "parentheses", "square brackets"],
-    answer: "parentheses"
-  },
-  {
-    title: "Arrays in JavaScript can be used to store ____.",
-    choices: [
-      "numbers and strings",
-      "other arrays",
-      "booleans",
-      "all of the above"
-    ],
-    answer: "all of the above"
-  },
-  {
-    title:
-      "String values must be enclosed within ____ when being assigned to variables.",
-    choices: ["commas", "curly brackets", "quotes", "parentheses"],
-    answer: "quotes"
-  },
-  {
-    title:
-      "A very useful tool used during development and debugging for printing content to the debugger is:",
-    choices: ["JavaScript", "terminal / bash", "for loops", "console.log"],
-    answer: "console.log"
-  }
-];
